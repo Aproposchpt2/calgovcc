@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -384,6 +384,35 @@ button{font-family:var(--body);cursor:pointer}
 </div>
 
 <script>
+(async function authGuard() {
+  const raw = sessionStorage.getItem('capgen_bc_session');
+  if (!raw) { window.location.replace('/login'); return; }
+
+  try {
+    const resp = await fetch('/.netlify/functions/verify-session', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ token: raw })
+    });
+    const data = await resp.json();
+
+    if (!data.ok) {
+      // Token invalid or expired — clear and redirect
+      sessionStorage.removeItem('capgen_bc_session');
+      window.location.replace('/login?reason=' + (data.error || 'session_expired'));
+      return;
+    }
+
+    // Token valid — populate welcome banner with member email
+    const banner = document.getElementById('memberEmail');
+    if (banner) banner.textContent = data.member.email;
+
+  } catch (err) {
+    console.error('[authGuard] verify-session failed:', err);
+    // Network error — fail open so dashboard still loads
+    // Remove this catch block if you want strict mode (fail closed)
+  }
+})();
 (function(){
   // ── Auth ──────────────────────────────────────────────────
   var session = null;
