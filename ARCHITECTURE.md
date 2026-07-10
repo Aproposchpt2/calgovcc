@@ -1,0 +1,12 @@
+components/
+    Dashboard.jsx
+    UnifiedContractsList.jsx
+    ContractCard.jsx
+    ProposalBuilder.jsx
+services/
+    proposals/
+    ai/
+    unified/
+    nevada-procurement/
+pages/
+    ProposalBuilderPage.jsx

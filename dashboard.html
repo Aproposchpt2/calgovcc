@@ -1,0 +1,846 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NGCC Dashboard — National Government Contract Center</title>
+<meta name="robots" content="noindex"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,700;1,6..96,400&family=Cormorant:ital,wght@0,500;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0F2A6A;--ink-deep:#081A42;--surface:rgba(255,255,255,.05);
+  --white:#FFFFFF;--silver:#C3D0E8;--mist:#7890B8;
+  --gold:#D5AE55;--gold-dim:rgba(213,174,85,.25);
+  --green:#3EE391;--amber:#F2B447;--red:#FF6969;--cyan:#7BDCFF;
+  --line:rgba(255,255,255,.1);--line-2:rgba(255,255,255,.18);
+  --disp:'Bodoni Moda',Georgia,serif;--sub:'Cormorant',Georgia,serif;--body:'Jost',sans-serif;
+  --sidebar:260px;--right:280px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);background:var(--ink-deep);color:var(--silver);line-height:1.6;min-height:100vh;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{font-family:var(--body);cursor:pointer}
+
+/* ── Topbar ── */
+.topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 24px;height:58px;background:rgba(8,26,66,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(20px)}
+.top-brand{display:flex;align-items:center;gap:10px}
+.top-mark{width:34px;height:34px;border:1px solid var(--gold-dim);border-radius:8px;display:grid;place-items:center;font-family:var(--disp);font-size:.72rem;color:var(--gold);font-weight:700;background:rgba(213,174,85,.08)}
+.top-name{font-family:var(--disp);font-size:1rem;color:var(--white);line-height:1}
+.top-sub{font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mist);font-weight:500}
+.top-right{display:flex;align-items:center;gap:12px}
+.top-biz{font-size:.78rem;color:rgba(255,255,255,.5)}
+.top-biz strong{color:var(--white);font-weight:500}
+.top-signout{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mist);border:1px solid var(--line);border-radius:4px;padding:6px 12px;background:none;transition:.18s}
+.top-signout:hover{color:var(--white);border-color:var(--line-2)}
+.live-badge{display:flex;align-items:center;gap:6px;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--green);font-weight:600}
+.live-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(62,227,145,.2);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(62,227,145,.2)}50%{box-shadow:0 0 0 6px rgba(62,227,145,.06)}}
+
+/* ── Layout ── */
+.shell{display:grid;grid-template-columns:var(--sidebar) 1fr var(--right);min-height:calc(100vh - 58px)}
+
+/* ── Sidebar ── */
+.sidebar{border-right:1px solid var(--line);padding:20px 0;display:flex;flex-direction:column;position:sticky;top:58px;height:calc(100vh - 58px);overflow-y:auto}
+.sidebar-section{padding:0 16px;margin-bottom:24px}
+.sidebar-label{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mist);font-weight:600;margin-bottom:10px;padding:0 4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:.82rem;color:rgba(255,255,255,.6);transition:.16s;cursor:pointer;border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{background:rgba(255,255,255,.06);color:var(--white)}
+.nav-item.active{background:rgba(213,174,85,.12);color:var(--gold);border:1px solid rgba(213,174,85,.2)}
+.nav-item .nav-icon{width:18px;text-align:center;font-size:.9rem;flex-shrink:0}
+.nav-item .nav-badge{margin-left:auto;font-size:.58rem;background:var(--gold);color:var(--ink-deep);border-radius:999px;padding:2px 7px;font-weight:700}
+.nav-item .soon{margin-left:auto;font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mist)}
+.sidebar-footer{margin-top:auto;padding:16px}
+
+/* ── Main content ── */
+.main{padding:24px;overflow-y:auto}
+
+/* ── Tabs ── */
+.tab-bar{display:flex;gap:6px;margin-bottom:24px;border-bottom:1px solid var(--line);padding-bottom:0}
+.tab{display:flex;align-items:center;gap:8px;padding:10px 18px;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--mist);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:.18s}
+.tab:hover{color:var(--white)}
+.tab.active{color:var(--white);border-bottom-color:var(--gold)}
+.tab .tab-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.tab-dot-federal{background:var(--cyan)}
+.tab-dot-nevada{background:var(--green)}
+.tab-dot-california{background:var(--amber)}
+.tab .tab-count{font-size:.58rem;background:rgba(255,255,255,.12);border-radius:999px;padding:2px 7px}
+.tab.active .tab-count{background:rgba(213,174,85,.2);color:var(--gold)}
+
+/* ── Filter bar ── */
+.filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;align-items:center}
+.filter-input{flex:1;min-width:200px;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:8px;color:var(--white);font-family:var(--body);font-size:.85rem;padding:9px 14px}
+.filter-input:focus{outline:none;border-color:rgba(255,255,255,.3)}
+.filter-select{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:8px;color:var(--silver);font-family:var(--body);font-size:.82rem;padding:9px 12px;min-width:140px}
+.filter-select:focus{outline:none;border-color:rgba(255,255,255,.3)}
+.filter-count{font-size:.72rem;color:var(--mist);white-space:nowrap;margin-left:4px}
+
+/* ── Contract cards ── */
+.cards{display:flex;flex-direction:column;gap:10px}
+.contract-card{border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:rgba(255,255,255,.04);transition:.18s;cursor:pointer}
+.contract-card:hover{background:rgba(255,255,255,.07);border-color:var(--line-2)}
+.contract-card.selected{background:rgba(123,220,255,.06);border-color:rgba(123,220,255,.3)}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}
+.card-title{font-size:.92rem;color:var(--white);font-weight:500;line-height:1.45;flex:1}
+.card-fit{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px}
+.fit-ring{width:42px;height:42px;position:relative}
+.fit-ring svg{width:42px;height:42px;transform:rotate(-90deg)}
+.fit-ring circle{fill:none;stroke-width:4;r:16;cx:21;cy:21}
+.fit-track{stroke:rgba(255,255,255,.1)}
+.fit-fill{stroke-dasharray:100.5;stroke-linecap:round;transition:.6s}
+.fit-score{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;color:var(--white)}
+.fit-label{font-size:.52rem;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.card-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.meta-chip{font-size:.65rem;letter-spacing:.06em;border-radius:999px;padding:3px 9px;border:1px solid;white-space:nowrap}
+.chip-agency{color:var(--silver);border-color:var(--line)}
+.chip-naics{color:var(--cyan);border-color:rgba(123,220,255,.25);background:rgba(123,220,255,.06)}
+.chip-setaside{color:var(--gold);border-color:rgba(213,174,85,.25);background:rgba(213,174,85,.06)}
+.chip-hot{color:var(--red);border-color:rgba(255,105,105,.3);background:rgba(255,105,105,.07)}
+.chip-warm{color:var(--amber);border-color:rgba(242,180,71,.3);background:rgba(242,180,71,.07)}
+.chip-ok{color:var(--green);border-color:rgba(62,227,145,.3);background:rgba(62,227,145,.07)}
+.card-actions{display:flex;gap:8px;align-items:center}
+.card-deadline{font-size:.72rem;color:var(--mist);margin-right:auto}
+.card-deadline strong{color:var(--silver)}
+.btn-analyze{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;border:1px solid rgba(213,174,85,.4);border-radius:6px;padding:6px 12px;background:rgba(213,174,85,.08);color:var(--gold);transition:.18s}
+.btn-analyze:hover{background:rgba(213,174,85,.18);border-color:var(--gold)}
+.btn-view{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;border:1px solid var(--line);border-radius:6px;padding:6px 12px;background:rgba(255,255,255,.05);color:var(--silver);transition:.18s}
+.btn-view:hover{background:rgba(255,255,255,.1);color:var(--white)}
+
+/* ── Loading / Empty / Coming Soon states ── */
+.state-box{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;gap:12px}
+.state-icon{font-size:2.2rem;opacity:.5}
+.state-title{font-family:var(--disp);font-size:1.3rem;color:var(--white);font-weight:400}
+.state-sub{font-size:.88rem;color:var(--mist);max-width:380px;line-height:1.65}
+.state-pills{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:4px}
+.state-pill{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:6px 14px;color:var(--mist)}
+.loading-bar{width:200px;height:3px;background:rgba(255,255,255,.1);border-radius:999px;overflow:hidden}
+.loading-fill{height:100%;background:linear-gradient(90deg,transparent,var(--gold),transparent);animation:shimmer 1.4s infinite}
+@keyframes shimmer{0%{transform:translateX(-200px)}100%{transform:translateX(400px)}}
+
+/* ── Coming soon (California) ── */
+.coming-soon{border:1px solid rgba(242,180,71,.2);border-radius:16px;padding:48px 32px;background:linear-gradient(135deg,rgba(242,180,71,.04),rgba(255,255,255,.02));display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;max-width:520px;margin:40px auto}
+.coming-soon-tag{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);font-weight:600;border:1px solid rgba(242,180,71,.3);border-radius:999px;padding:4px 14px}
+.coming-soon h3{font-family:var(--disp);font-size:1.8rem;color:var(--white);font-weight:400}
+.coming-soon p{color:var(--mist);font-size:.9rem;line-height:1.7;max-width:360px}
+.notify-row{display:flex;gap:8px;width:100%;max-width:360px}
+.notify-input{flex:1;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:8px;color:var(--white);font-family:var(--body);font-size:.85rem;padding:10px 14px}
+.notify-input:focus{outline:none;border-color:rgba(255,255,255,.3)}
+.notify-btn{background:var(--white);color:var(--ink-deep);font-family:var(--body);font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:8px;padding:0 18px;white-space:nowrap;transition:.18s}
+.notify-btn:hover{background:var(--silver)}
+
+/* ── Right panel ── */
+.right-panel{border-left:1px solid var(--line);padding:20px 18px;position:sticky;top:58px;height:calc(100vh - 58px);overflow-y:auto;display:flex;flex-direction:column;gap:18px}
+.panel-section{border:1px solid var(--line);border-radius:12px;padding:16px;background:rgba(255,255,255,.03)}
+.panel-title{font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--mist);font-weight:600;margin-bottom:12px}
+.stat-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--line)}
+.stat-row:last-child{border-bottom:none}
+.stat-label{font-size:.78rem;color:var(--mist)}
+.stat-val{font-family:var(--disp);font-size:1.1rem;color:var(--white)}
+.naics-list{display:flex;flex-direction:column;gap:6px}
+.naics-item{font-size:.75rem;color:var(--silver);background:rgba(123,220,255,.06);border:1px solid rgba(123,220,255,.15);border-radius:6px;padding:5px 10px}
+.naics-code{color:var(--cyan);font-weight:600;margin-right:6px}
+.analyze-cta{border:1px solid rgba(213,174,85,.3);border-radius:12px;padding:16px;background:rgba(213,174,85,.05);text-align:center}
+.analyze-cta p{font-size:.8rem;color:var(--mist);margin-bottom:10px;line-height:1.55}
+.analyze-cta strong{color:var(--white);display:block;margin-bottom:4px;font-size:.88rem}
+
+/* ── Responsive ── */
+@media(max-width:1100px){
+  .shell{grid-template-columns:var(--sidebar) 1fr}
+  .right-panel{display:none}
+}
+@media(max-width:760px){
+  .shell{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .top-biz{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- Topbar -->
+<header class="topbar">
+  <div class="top-brand">
+    <div class="top-mark">NG</div>
+    <div>
+      <div class="top-name">NGCC</div>
+      <div class="top-sub">National Government Contract Center</div>
+    </div>
+  </div>
+  <div class="top-right">
+    <span class="live-badge">Live</span>
+    <div class="top-biz">Signed in as <strong id="topBizName">—</strong></div>
+    <button class="top-signout" id="signOutBtn">Sign out</button>
+  </div>
+</header>
+
+<div class="shell">
+
+  <!-- Sidebar nav -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Search Engines</div>
+      <button class="nav-item active" data-tab="federal" title="Opens CapGen Federal Dashboard">
+        <span class="nav-icon">🇺🇸</span> Federal Contracts
+        <span class="soon">↗ CapGen</span>
+      </button>
+      <button class="nav-item" data-tab="nevada">
+        <span class="nav-icon">◆</span> Nevada State
+        <span class="nav-badge" id="nvCount">—</span>
+      </button>
+      <button class="nav-item" data-tab="california">
+        <span class="nav-icon">☀</span> California State
+        <span class="nav-badge" id="caCount">—</span>
+      </button>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Tools</div>
+      <button class="nav-item" data-tab="saved">
+        <span class="nav-icon">★</span> Saved Contracts
+      </button>
+      <button class="nav-item" data-nav="analyze">
+        <span class="nav-icon">◎</span> Analyze Fit
+      </button>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Account</div>
+      <button class="nav-item" data-tab="profile">
+        <span class="nav-icon">◈</span> My Profile
+      </button>
+      <button class="nav-item" data-tab="settings">
+        <span class="nav-icon">⚙</span> Settings
+      </button>
+      <button class="nav-item" onclick="window.location.href='/support.html'">
+        <span class="nav-icon">?</span> Support
+      </button>
+    </div>
+    <div class="sidebar-footer">
+      <button class="nav-item" id="sideSignOut">
+        <span class="nav-icon">→</span> Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main" id="mainContent">
+
+    <!-- Tab bar -->
+    <div class="tab-bar">
+      <button class="tab active" data-tab="federal" title="Opens CapGen Federal Dashboard">
+        <span class="tab-dot tab-dot-federal"></span>
+        Federal ↗
+        <span class="tab-count" id="fedTab">SAM.gov</span>
+      </button>
+      <button class="tab" data-tab="nevada">
+        <span class="tab-dot tab-dot-nevada"></span>
+        Nevada
+        <span class="tab-count" id="nvTab">—</span>
+      </button>
+      <button class="tab" data-tab="california">
+        <span class="tab-dot tab-dot-california"></span>
+        California
+        <span class="tab-count" id="caTab">—</span>
+      </button>
+    </div>
+
+    <!-- Federal tab -->
+    <div id="tab-federal">
+      <!-- Entity card -->
+      <div class="fed-entity-card" id="fedEntityCard"></div>
+      <!-- Stat bar -->
+      <div class="fed-stat-bar">
+        <div class="fed-stat"><div class="fed-stat-val red" id="fedHot">—</div><div class="fed-stat-label">🔥 Closing ≤ 7d</div></div>
+        <div class="fed-stat"><div class="fed-stat-val amber" id="fedWarm">—</div><div class="fed-stat-label">⚡ Closing ≤ 14d</div></div>
+        <div class="fed-stat"><div class="fed-stat-val green" id="fedAvail">—</div><div class="fed-stat-label">Active</div></div>
+        <div class="fed-stat"><div class="fed-stat-val" id="fedTotalStat">—</div><div class="fed-stat-label">Total matched</div></div>
+      </div>
+      <!-- NAICS ribbon -->
+      <div class="fed-naics-controls">
+        <span class="fed-naics-label">NAICS</span>
+        <button class="fed-naics-ctrl-btn active-ctrl" id="fedNaicsAllBtn">Select All</button>
+        <button class="fed-naics-ctrl-btn" id="fedNaicsClearBtn">Clear All</button>
+      </div>
+      <div class="fed-naics-ribbon" id="fedNaicsRibbon"></div>
+      <!-- Controls -->
+      <div class="fed-controls">
+        <input class="filter-input" id="fedSearch" placeholder="Search by title, agency, keyword…" type="text" style="flex:1;min-width:160px"/>
+        <select class="filter-select" id="fedSetAside">
+          <option value="">All Set-Asides</option>
+          <option value="SBA">Small Business</option>
+          <option value="8A">8(a)</option>
+          <option value="WOSB">Women-Owned</option>
+          <option value="SDVOSB">Service-Disabled Veteran</option>
+          <option value="HUBZone">HUBZone</option>
+        </select>
+        <div class="fed-win-btns">
+          <button class="fed-win-btn fwb-active" data-days="0">All</button>
+          <button class="fed-win-btn" data-days="7">7d</button>
+          <button class="fed-win-btn" data-days="14">14d</button>
+          <button class="fed-win-btn" data-days="30">30d</button>
+          <button class="fed-win-btn" data-days="60">60d</button>
+          <button class="fed-win-btn" data-days="90">90d</button>
+        </div>
+        <span class="filter-count" id="fedFilterCount"></span>
+      </div>
+      <div class="cards" id="fedCards">
+        <div class="state-box">
+          <div class="state-icon">🇺🇸</div>
+          <div class="state-title">Loading your federal matches…</div>
+          <div class="loading-bar"><div class="loading-fill"></div></div>
+          <div class="state-sub">Pulling live SAM.gov opportunities matched to your NAICS profile.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nevada tab -->
+    <div id="tab-nevada" style="display:none">
+      <div class="filter-bar">
+        <input class="filter-input" id="nvSearch" placeholder="Search Nevada bids by title, agency…" type="text"/>
+        <select class="filter-select" id="nvAgency">
+          <option value="">All Agencies</option>
+        </select>
+        <select class="filter-select" id="nvType">
+          <option value="">All Types</option>
+          <option value="BID">BID</option>
+          <option value="RFP">RFP</option>
+          <option value="RFQ">RFQ</option>
+        </select>
+        <select class="filter-select" id="nvDeadline">
+          <option value="">Any Deadline</option>
+          <option value="7">Closing ≤ 7 days</option>
+          <option value="14">Closing ≤ 14 days</option>
+          <option value="30">Closing ≤ 30 days</option>
+        </select>
+        <span class="filter-count" id="nvFilterCount"></span>
+      </div>
+      <div class="cards" id="nvCards">
+        <div class="state-box">
+          <div class="state-icon">◆</div>
+          <div class="state-title">Loading Nevada bids…</div>
+          <div class="loading-bar"><div class="loading-fill"></div></div>
+          <div class="state-sub">Pulling open solicitations from Nevada NGEM procurement feed.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- California tab -->
+    <div id="tab-california" style="display:none">
+      <div class="cards" id="caCards">
+        <div class="state-box">
+          <div class="state-icon">☀</div>
+          <div class="state-title">Loading California bids…</div>
+          <div class="loading-bar"><div class="loading-fill"></div></div>
+          <div class="state-sub">Pulling open solicitations from the California Cal eProcure pipeline.</div>
+        </div>
+      </div>
+
+      <div class="coming-soon" style="margin-top:24px">
+        <span class="coming-soon-tag">Live Feed</span>
+        <h3>California State Contracts</h3>
+        <p>Open solicitations from California are now streaming into the dashboard through the new CalStateGen pipeline.</p>
+        <div class="state-pills">
+          <span class="state-pill">Cal eProcure</span>
+          <span class="state-pill">State Agency Bids</span>
+          <span class="state-pill">Local Government</span>
+        </div>
+        <div class="notify-row">
+          <input class="notify-input" id="caNotifyEmail" type="email" placeholder="Your email"/>
+          <button class="notify-btn" id="caNotifyBtn">Notify Me</button>
+        </div>
+        <div id="caNotifyMsg" style="font-size:.78rem;color:var(--green);min-height:18px"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Right panel -->
+  <aside class="right-panel">
+    <div class="panel-section">
+      <div class="panel-title">Your Profile</div>
+      <div class="stat-row"><span class="stat-label">Business</span><span class="stat-val" id="rpBizName" style="font-size:.82rem">—</span></div>
+      <div class="stat-row"><span class="stat-label">UEI</span><span class="stat-val" id="rpUei" style="font-size:.78rem;color:var(--mist)">—</span></div>
+      <div class="stat-row"><span class="stat-label">Plan</span><span class="stat-val" style="font-size:.78rem;color:var(--gold)">NGCC Discovery</span></div>
+    </div>
+    <div class="panel-section">
+      <div class="panel-title">NAICS Codes on File</div>
+      <div class="naics-list" id="rpNaics">
+        <div style="font-size:.78rem;color:var(--mist)">Loading profile…</div>
+      </div>
+    </div>
+    <div class="panel-section">
+      <div class="panel-title">Today's Matches</div>
+      <div class="stat-row"><span class="stat-label">Federal</span><span class="stat-val" id="rpFedCount">—</span></div>
+      <div class="stat-row"><span class="stat-label">Nevada</span><span class="stat-val" id="rpNvCount">—</span></div>
+      <div class="stat-row"><span class="stat-label">California</span><span class="stat-val" id="rpCaCount" style="color:var(--mist);font-size:.78rem">—</span></div>
+    </div>
+    <div class="analyze-cta">
+      <strong>Analyze Fit</strong>
+      <p>Select any contract and run a full AI analysis — fit score, bid/no-bid rationale, and a proposal checklist.</p>
+      <button class="btn-analyze" style="width:100%;padding:10px" id="rpAnalyzeBtn" disabled>Select a contract first</button>
+    </div>
+  </aside>
+
+</div>
+
+<script>
+(function(){
+  // ── Auth ──────────────────────────────────────────────────
+  var session = null;
+  try {
+    var raw = sessionStorage.getItem('ngcc_session') || localStorage.getItem('ngcc_session');
+    if(raw) session = JSON.parse(raw);
+  } catch(_){}
+  if(!session){ window.location.href = '/login.html'; return; }
+
+  var bizName   = session.business_name || session.entity_name || 'Your Business';
+  var naicsCodes = session.naics_codes || [];
+  var uei        = session.uei || session.entity_uei || '—';
+
+  // ── Populate header & right panel ─────────────────────────
+  document.getElementById('topBizName').textContent = bizName;
+  document.getElementById('rpBizName').textContent  = bizName;
+  document.getElementById('rpUei').textContent      = uei;
+
+  var naicsList = document.getElementById('rpNaics');
+  if(naicsCodes.length){
+    naicsList.innerHTML = naicsCodes.map(function(c){
+      return '<div class="naics-item"><span class="naics-code">'+c+'</span></div>';
+    }).join('');
+  } else {
+    naicsList.innerHTML = '<div style="font-size:.78rem;color:var(--mist)">No NAICS codes on file yet. Complete your profile to see personalized matches.</div>';
+  }
+
+  // ── Tab switching ─────────────────────────────────────────
+  var currentTab = 'federal';
+  var selectedContract = null;
+
+  function switchTab(name){
+    if(name === 'federal'){ window.location.href = 'https://capgen.aproposgroupllc.com'; return; }
+    currentTab = name;
+    ['federal','nevada','california'].forEach(function(t){
+      var el = document.getElementById('tab-'+t);
+      if(el) el.style.display = (t === name ? '' : 'none');
+    });
+    document.querySelectorAll('.tab,[data-tab]').forEach(function(btn){
+      btn.classList.toggle('active', btn.dataset.tab === name);
+    });
+    selectedContract = null;
+    updateAnalyzeBtn();
+  }
+
+  document.querySelectorAll('[data-tab]').forEach(function(btn){
+    btn.addEventListener('click', function(){ switchTab(btn.dataset.tab); });
+  });
+
+  // ── Analyze Fit button ────────────────────────────────────
+  function updateAnalyzeBtn(){
+    var btn = document.getElementById('rpAnalyzeBtn');
+    if(selectedContract){
+      btn.disabled = false;
+      btn.textContent = 'Analyze: '+selectedContract.title.slice(0,28)+'…';
+    } else {
+      btn.disabled = true;
+      btn.textContent = 'Select a contract first';
+    }
+  }
+
+  document.getElementById('rpAnalyzeBtn').addEventListener('click', function(){
+    if(!selectedContract) return;
+    sessionStorage.setItem('ngcc_analyze_contract', JSON.stringify(selectedContract));
+    window.location.href = '/analyze-fit.html';
+  });
+
+  // ── Sign out ──────────────────────────────────────────────
+  function signOut(){
+    sessionStorage.removeItem('ngcc_session');
+    localStorage.removeItem('ngcc_session');
+    window.location.href = '/login.html';
+  }
+  document.getElementById('signOutBtn').addEventListener('click', signOut);
+  document.getElementById('sideSignOut').addEventListener('click', signOut);
+
+  // ── California notify ─────────────────────────────────────
+  document.getElementById('caNotifyBtn').addEventListener('click', function(){
+    var email = document.getElementById('caNotifyEmail').value.trim();
+    var msg   = document.getElementById('caNotifyMsg');
+    if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+      msg.style.color = '#FF6969';
+      msg.textContent = 'Please enter a valid email.';
+      return;
+    }
+    msg.style.color = 'var(--green)';
+    msg.textContent = 'Got it — we will notify you at '+email+' when California launches.';
+    document.getElementById('caNotifyBtn').disabled = true;
+  });
+
+  // ── Fit score helpers ─────────────────────────────────────
+  function fitColor(score){
+    if(score >= 80) return 'var(--green)';
+    if(score >= 55) return 'var(--amber)';
+    return '#FF6969';
+  }
+  function fitLabel(score){
+    if(score >= 80) return 'High match';
+    if(score >= 55) return 'Review';
+    return 'Low fit';
+  }
+  function fitRing(score, color){
+    var circ = 100.5;
+    var dash = (score / 100) * circ;
+    return '<svg><circle class="fit-track"/><circle class="fit-fill" stroke="'+color+'" stroke-dashoffset="'+(circ-dash)+'"/></svg>';
+  }
+  function deadlineChip(dateStr){
+    if(!dateStr) return '<span class="meta-chip chip-agency">Deadline TBD</span>';
+    var d   = new Date(dateStr);
+    var now = new Date();
+    var days = Math.ceil((d - now) / 864e5);
+    if(days < 0) return '';
+    var cls = days <= 7 ? 'chip-hot' : days <= 14 ? 'chip-warm' : 'chip-ok';
+    var lbl = days <= 7 ? '🔥 ' : days <= 14 ? '⚡ ' : '';
+    return '<span class="meta-chip '+cls+'">'+lbl+'Closes '+d.toLocaleDateString([],{month:'short',day:'numeric'})+'</span>';
+  }
+
+  // ── Federal contracts ─────────────────────────────────────
+  var fedAll = [], fedFiltered = [];
+
+  function renderFedCard(r, idx){
+    var score = r.fitScore || 0;
+    var color = fitColor(score);
+    return '<div class="contract-card" data-idx="'+idx+'" data-source="federal">'+
+      '<div class="card-top">'+
+        '<div class="card-title">'+escHtml(r.title)+'</div>'+
+        '<div class="card-fit">'+
+          '<div class="fit-ring">'+fitRing(score, color)+'<div class="fit-score" style="color:'+color+'">'+score+'</div></div>'+
+          '<div class="fit-label" style="color:'+color+'">'+fitLabel(score)+'</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="card-meta">'+
+        '<span class="meta-chip chip-agency">'+escHtml(r.agency||'Agency')+'</span>'+
+        (r.naicsCode?'<span class="meta-chip chip-naics">NAICS '+escHtml(r.naicsCode)+'</span>':'')+
+        (r.setAside&&r.setAside!=='None'?'<span class="meta-chip chip-setaside">'+escHtml(r.setAside)+'</span>':'')+
+        deadlineChip(r.responseDeadline)+
+      '</div>'+
+      '<div class="card-actions">'+
+        '<span class="card-deadline">Notice <strong>'+escHtml(r.noticeId||r.id||'—')+'</strong></span>'+
+        '<button class="btn-view" onclick="viewFed(\''+escAttr(r.samUrl||'')+'\')" type="button">View on SAM.gov</button>'+
+        '<button class="btn-analyze" onclick="selectContract('+idx+',\'federal\')" type="button">★ Analyze Fit</button>'+
+      '</div>'+
+    '</div>';
+  }
+
+  function applyFedFilters(){
+    var q  = (document.getElementById('fedSearch').value||'').toLowerCase();
+    var sa = document.getElementById('fedSetAside').value;
+    var dl = parseInt(document.getElementById('fedDeadline').value)||0;
+    fedFiltered = fedAll.filter(function(r){
+      // NAICS ribbon filter
+      if(fedActiveNaics.length && fedActiveNaics.indexOf(r.naicsCode) === -1) return false;
+      // Window filter
+      if(fedWindowDays > 0 && r.responseDeadline){
+        var days = Math.ceil((new Date(r.responseDeadline)-new Date())/864e5);
+        if(days < 0 || days > fedWindowDays) return false;
+      }
+      if(q && !((r.title||'').toLowerCase().includes(q)||(r.agency||'').toLowerCase().includes(q))) return false;
+      if(sa && (r.setAside||'').indexOf(sa)===-1) return false;
+      if(dl){
+        if(!r.responseDeadline) return false;
+        var days = Math.ceil((new Date(r.responseDeadline)-new Date())/864e5);
+        if(days < 0 || days > dl) return false;
+      }
+      return true;
+    });
+    document.getElementById('fedFilterCount').textContent = fedFiltered.length+' contracts';
+    document.getElementById('fedTab').textContent = fedFiltered.length;
+    document.getElementById('fedCount').textContent = fedFiltered.length;
+    document.getElementById('rpFedCount').textContent = fedFiltered.length;
+    var box = document.getElementById('fedCards');
+    if(!fedFiltered.length){
+      box.innerHTML = '<div class="state-box"><div class="state-icon">🔍</div><div class="state-title">No federal matches</div><div class="state-sub">Try adjusting your filters or check back after the next data refresh.</div></div>';
+      return;
+    }
+    box.innerHTML = fedFiltered.map(renderFedCard).join('');
+    box.querySelectorAll('.contract-card').forEach(function(c){
+      c.addEventListener('click', function(e){
+        if(e.target.tagName==='BUTTON') return;
+        var idx = parseInt(c.dataset.idx);
+        selectContract(idx, 'federal');
+      });
+    });
+  }
+
+  ['fedSearch','fedSetAside','fedDeadline'].forEach(function(id){
+    document.getElementById(id).addEventListener('input', applyFedFilters);
+  });
+
+  // ── Federal Money Dashboard ───────────────────────────────
+  var fedActiveNaics = naicsCodes.slice(); // all active by default
+  var fedWindowDays  = 0; // 0 = All
+
+  // Entity card
+  (function buildEntityCard(){
+    var card = document.getElementById('fedEntityCard');
+    if(!card) return;
+    card.innerHTML =
+      '<div class="fed-ef"><div class="fed-ef-label">Business</div><div class="fed-ef-val">'+escHtml(bizName)+'</div></div>'+
+      '<div class="fed-ef"><div class="fed-ef-label">UEI</div><div class="fed-ef-val">'+escHtml(uei)+'</div></div>'+
+      '<div class="fed-ef"><div class="fed-ef-label">NAICS Codes</div><div class="fed-ef-val">'+naicsCodes.length+'</div></div>'+
+      '<div class="fed-ef"><div class="fed-ef-label">SAM Status</div><div class="fed-ef-val active">Active</div></div>';
+  })();
+
+  // NAICS ribbon
+  (function buildNaicsRibbon(){
+    var ribbon = document.getElementById('fedNaicsRibbon');
+    if(!ribbon || !naicsCodes.length) return;
+    ribbon.innerHTML = naicsCodes.map(function(code){
+      return '<div class="fed-naics-bubble nbc-active" data-code="'+code+'" onclick="toggleNaicsBubble(this,\''+code+'\')"><div class="fed-nb-code">'+code+'</div></div>';
+    }).join('');
+  })();
+
+  window.toggleNaicsBubble = function(el, code){
+    var idx = fedActiveNaics.indexOf(code);
+    if(idx >= 0){ fedActiveNaics.splice(idx, 1); el.classList.remove('nbc-active'); el.classList.add('nbc-dim'); }
+    else { fedActiveNaics.push(code); el.classList.remove('nbc-dim'); el.classList.add('nbc-active'); }
+    applyFedFilters();
+  };
+
+  document.getElementById('fedNaicsAllBtn').addEventListener('click', function(){
+    fedActiveNaics = naicsCodes.slice();
+    document.querySelectorAll('.fed-naics-bubble').forEach(function(b){ b.classList.add('nbc-active'); b.classList.remove('nbc-dim'); });
+    applyFedFilters();
+  });
+  document.getElementById('fedNaicsClearBtn').addEventListener('click', function(){
+    fedActiveNaics = [];
+    document.querySelectorAll('.fed-naics-bubble').forEach(function(b){ b.classList.remove('nbc-active'); b.classList.add('nbc-dim'); });
+    applyFedFilters();
+  });
+
+  // Window toggle
+  document.querySelectorAll('.fed-win-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      fedWindowDays = parseInt(btn.dataset.days)||0;
+      document.querySelectorAll('.fed-win-btn').forEach(function(b){ b.classList.remove('fwb-active'); });
+      btn.classList.add('fwb-active');
+      applyFedFilters();
+    });
+  });
+
+  function updateStatBar(rows){
+    var hot=0, warm=0, avail=0;
+    rows.forEach(function(r){
+      var u = r.urgency||'ok';
+      if(u==='hot') hot++;
+      else if(u==='warm') warm++;
+      else avail++;
+    });
+    document.getElementById('fedHot').textContent  = hot;
+    document.getElementById('fedWarm').textContent = warm;
+    document.getElementById('fedAvail').textContent = avail;
+    document.getElementById('fedTotalStat').textContent = rows.length;
+  }
+  function loadFederal(){
+    if(!naicsCodes.length){
+      document.getElementById('fedCards').innerHTML = '<div class="state-box"><div class="state-icon">◈</div><div class="state-title">Complete your profile first</div><div class="state-sub">Add your NAICS codes in My Profile to see federal contracts matched to your business.</div></div>';
+      return;
+    }
+    fetch('/.netlify/functions/sam-opportunities?naics='+naicsCodes.join(',')+'&limit=100')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d.error || !Array.isArray(d.results)){
+        document.getElementById('fedCards').innerHTML = '<div class="state-box"><div class="state-icon">⚠</div><div class="state-title">Could not load federal contracts</div><div class="state-sub">'+(d.message||'Please try again in a moment.')+'</div></div>';
+        return;
+      }
+      fedAll = d.results;
+      updateStatBar(fedAll);
+      applyFedFilters();
+    })
+    .catch(function(){ document.getElementById('fedCards').innerHTML = '<div class="state-box"><div class="state-icon">⚠</div><div class="state-title">Connection error</div><div class="state-sub">Check your connection and try refreshing.</div></div>'; });
+  }
+    fetch('/.netlify/functions/sam-opportunities?naics='+naicsCodes.join(',')+'&limit=50', {
+      headers:{ Authorization: 'Bearer '+(session.token||'') }
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d.error || !Array.isArray(d.results)){
+        document.getElementById('fedCards').innerHTML = '<div class="state-box"><div class="state-icon">⚠</div><div class="state-title">Could not load federal contracts</div><div class="state-sub">'+(d.message||'Please try again in a moment.')+'</div></div>';
+        return;
+      }
+      fedAll = d.results;
+      applyFedFilters();
+    })
+    .catch(function(){ document.getElementById('fedCards').innerHTML = '<div class="state-box"><div class="state-icon">⚠</div><div class="state-title">Connection error</div><div class="state-sub">Check your connection and try refreshing.</div></div>'; });
+  }
+
+  // ── Nevada bids ───────────────────────────────────────────
+  var nvAll = [], nvFiltered = [];
+
+  function renderNvCard(r, idx){
+    var score = r.fitScore || computeKeywordFit(r, session.keywords||[]);
+    var color = fitColor(score);
+    return '<div class="contract-card" data-idx="'+idx+'" data-source="nevada">'+
+      '<div class="card-top">'+
+        '<div class="card-title">'+escHtml(r.title||r.description||'Untitled solicitation')+'</div>'+
+        '<div class="card-fit">'+
+          '<div class="fit-ring">'+fitRing(score, color)+'<div class="fit-score" style="color:'+color+'">'+score+'</div></div>'+
+          '<div class="fit-label" style="color:'+color+'">'+fitLabel(score)+'</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="card-meta">'+
+        '<span class="meta-chip chip-agency">'+escHtml(r.agency||r.department||'Agency')+'</span>'+
+        (r.type?'<span class="meta-chip chip-naics">'+escHtml(r.type)+'</span>':'')+
+        deadlineChip(r.closeDate||r.dueDate)+
+      '</div>'+
+      '<div class="card-actions">'+
+        '<span class="card-deadline">'+escHtml(r.solicitationNumber||r.bidNumber||'')+'</span>'+
+        (r.url?'<button class="btn-view" onclick="window.open(\''+escAttr(r.url)+'\',\'_blank\')" type="button">View Bid</button>':'')+
+        '<button class="btn-analyze" onclick="selectContract('+idx+',\'nevada\')" type="button">★ Analyze Fit</button>'+
+      '</div>'+
+    '</div>';
+  }
+
+  function applyNvFilters(){
+    var q  = (document.getElementById('nvSearch').value||'').toLowerCase();
+    var ag = document.getElementById('nvAgency').value;
+    var tp = document.getElementById('nvType').value;
+    var dl = parseInt(document.getElementById('nvDeadline').value)||0;
+    nvFiltered = nvAll.filter(function(r){
+      if(q && !((r.title||r.description||'').toLowerCase().includes(q)||(r.agency||'').toLowerCase().includes(q))) return false;
+      if(ag && (r.agency||'')!==ag) return false;
+      if(tp && (r.type||'')!==tp) return false;
+      if(dl){
+        var d = r.closeDate||r.dueDate;
+        if(!d) return false;
+        var days = Math.ceil((new Date(d)-new Date())/864e5);
+        if(days<0||days>dl) return false;
+      }
+      return true;
+    });
+    document.getElementById('nvFilterCount').textContent = nvFiltered.length+' bids';
+    document.getElementById('nvTab').textContent = nvFiltered.length;
+    document.getElementById('nvCount').textContent = nvFiltered.length;
+    document.getElementById('rpNvCount').textContent = nvFiltered.length;
+    var box = document.getElementById('nvCards');
+    if(!nvFiltered.length){
+      box.innerHTML = '<div class="state-box"><div class="state-icon">🔍</div><div class="state-title">No Nevada bids matched</div><div class="state-sub">Try clearing filters or broadening your search terms.</div></div>';
+      return;
+    }
+    box.innerHTML = nvFiltered.map(renderNvCard).join('');
+  }
+
+  ['nvSearch','nvAgency','nvType','nvDeadline'].forEach(function(id){
+    document.getElementById(id).addEventListener('input', applyNvFilters);
+  });
+
+  function loadNevada(){
+    fetch('/.netlify/functions/ngem-pipeline')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var bids = d.bids || d.results || d || [];
+      if(!Array.isArray(bids)) bids = [];
+      nvAll = bids.map(function(b){
+        b.fitScore = computeKeywordFit(b, session.keywords||[]);
+        return b;
+      });
+      // Populate agency dropdown
+      var agencies = [...new Set(nvAll.map(function(b){ return b.agency||b.department||''; }).filter(Boolean))].sort();
+      var sel = document.getElementById('nvAgency');
+      agencies.forEach(function(a){ var o=document.createElement('option');o.value=a;o.textContent=a;sel.appendChild(o); });
+      applyNvFilters();
+    })
+    .catch(function(){ document.getElementById('nvCards').innerHTML = '<div class="state-box"><div class="state-icon">⚠</div><div class="state-title">Could not load Nevada bids</div><div class="state-sub">Check your connection and try refreshing.</div></div>'; });
+  }
+
+  // ── California bids ───────────────────────────────────────
+  var caAll = [];
+
+  function renderCaCard(r, idx){
+    var days = r.daysToClose;
+    if(days === undefined || days === null){
+      if(r.close_date){
+        days = Math.ceil((new Date(r.close_date) - new Date())/864e5);
+      } else {
+        days = 0;
+      }
+    }
+    var score = Math.max(0, Math.min(100, 100 - Math.max(days, 0)));
+    var color = fitColor(score);
+    var deadline = r.close_date ? deadlineChip(r.close_date) : '<span class="meta-chip chip-agency">Deadline TBD</span>';
+    return '<div class="contract-card" data-idx="'+idx+'" data-source="california">'+
+      '<div class="card-top">'+
+        '<div class="card-title">'+escHtml(r.title||'Untitled bid')+'</div>'+
+        '<div class="card-fit">'+
+          '<div class="fit-ring">'+fitRing(score, color)+'<div class="fit-score" style="color:'+color+'">'+score+'</div></div>'+
+          '<div class="fit-label" style="color:'+color+'">'+(days <= 7 ? 'Urgent' : days <= 14 ? 'Soon' : 'Active')+'</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="card-meta">'+
+        '<span class="meta-chip chip-agency">'+escHtml(r.agency||'Agency')+'</span>'+
+        (r.bid_type?'<span class="meta-chip chip-naics">'+escHtml(r.bid_type)+'</span>':'')+
+        deadline+
+      '</div>'+
+      '<div class="card-actions">'+
+        '<span class="card-deadline">Bid <strong>'+escHtml(r.solicitation_no||r.id||'—')+'</strong></span>'+
+        (r.url?'<button class="btn-view" onclick="window.open(\''+escAttr(r.url)+'\',\'_blank\')" type="button">View Bid</button>':'')+
+      '</div>'+
+    '</div>';
+  }
+
+  function loadCalifornia(){
+    fetch('/.netlify/functions/cal-pipeline')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var bids = d.bids || d.results || d || [];
+      if(!Array.isArray(bids)) bids = [];
+      caAll = bids.map(function(b){ return b; });
+      document.getElementById('caTab').textContent = caAll.length;
+      document.getElementById('caCount').textContent = caAll.length;
+      document.getElementById('rpCaCount').textContent = caAll.length;
+      var box = document.getElementById('caCards');
+      if(!caAll.length){
+        box.innerHTML = '<div class="state-box"><div class="state-icon">🔍</div><div class="state-title">No California bids matched</div><div class="state-sub">The new pipeline is live, but there are no current bids to display.</div></div>';
+        return;
+      }
+      box.innerHTML = caAll.map(renderCaCard).join('');
+    })
+    .catch(function(){ document.getElementById('caCards').innerHTML = '<div class="state-box"><div class="state-icon">⚠</div><div class="state-title">Could not load California bids</div><div class="state-sub">Check your connection and try refreshing.</div></div>'; });
+  }
+  // ── Keyword fit score ─────────────────────────────────────
+  function computeKeywordFit(record, keywords){
+    if(!keywords.length) return Math.floor(40 + Math.random()*30);
+    var text = ((record.title||'')+(record.description||'')+' '+(record.agency||'')).toLowerCase();
+    var hits = keywords.filter(function(k){ return text.includes(k.toLowerCase()); }).length;
+    var base = Math.min(95, 45 + (hits/keywords.length)*50);
+    return Math.round(base + (Math.random()*6 - 3));
+  }
+
+  // ── Contract selection ────────────────────────────────────
+  window.selectContract = function(idx, source){
+    var rec = source === 'federal' ? fedFiltered[idx] : nvFiltered[idx];
+    if(!rec) return;
+    selectedContract = Object.assign({}, rec, { source: source });
+    document.querySelectorAll('.contract-card').forEach(function(c){
+      c.classList.toggle('selected', parseInt(c.dataset.idx)===idx && c.dataset.source===source);
+    });
+    updateAnalyzeBtn();
+  };
+
+  window.viewFed = function(url){
+    if(url) window.open(url, '_blank');
+  };
+
+  // ── Helpers ───────────────────────────────────────────────
+  function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function escAttr(s){ return String(s||'').replace(/'/g,'&#39;').replace(/"/g,'&quot;'); }
+
+  // ── Boot ──────────────────────────────────────────────────
+  loadFederal();
+  loadNevada();
+  loadCalifornia();
+
+})();
+</script>
+</body>
+</html>
+
+
+

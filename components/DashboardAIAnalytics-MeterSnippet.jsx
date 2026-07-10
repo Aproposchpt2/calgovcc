@@ -1,0 +1,1 @@
+﻿<ProposalStrengthMeter winScore={winScore} />

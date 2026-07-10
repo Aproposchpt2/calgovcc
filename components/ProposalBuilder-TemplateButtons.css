@@ -1,0 +1,32 @@
+/* Template button bar */
+.template-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.template-buttons button {
+  padding: 8px 14px;
+  font-size: 14px;
+  background: #e8e8ef;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.template-buttons button:hover {
+  background: #dcdce6;
+}
+
+/* AI Generate Section button */
+.template-buttons .ai-generate {
+  background: #0078ff;
+  color: white;
+  border: none;
+}
+
+.template-buttons .ai-generate:hover {
+  background: #005fcc;
+}

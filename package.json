@@ -1,0 +1,7 @@
+{
+  "name": "ngcc-gov-contracts",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "National Government Contract Center — Federal, Nevada, California procurement search"
+}

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NGCC — Set Up Your Dashboard</title>
+<meta name="robots" content="noindex"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&family=Cormorant:ital,wght@1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0F2A6A;--white:#FFFFFF;--silver:#C3D0E8;--mist:#7890B8;--gold:#D5AE55;
+  --green:#3EE391;--cyan:#7BDCFF;--red:#FF6969;--amber:#F2B447;
+  --line:rgba(255,255,255,.12);--line-2:rgba(255,255,255,.22);
+  --disp:'Bodoni Moda',Georgia,serif;--sub:'Cormorant',Georgia,serif;--body:'Jost',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--body);color:rgba(255,255,255,.72);font-weight:300;line-height:1.7;
+  min-height:100vh;background:var(--ink);display:flex;align-items:flex-start;
+  justify-content:center;padding:40px 24px}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px}
+a{color:inherit;text-decoration:none}
+
+/* Progress bar */
+.progress{display:flex;align-items:center;gap:0;margin-bottom:36px;max-width:540px}
+.step{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1}
+.step-dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--line-2);
+  display:grid;place-items:center;font-size:.72rem;font-weight:700;color:var(--mist);
+  background:rgba(255,255,255,.04);transition:.3s}
+.step-dot.active{border-color:var(--gold);color:var(--gold);background:rgba(213,174,85,.1)}
+.step-dot.done{border-color:var(--green);color:var(--green);background:rgba(62,227,145,.1)}
+.step-label{font-size:.56rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mist);white-space:nowrap}
+.step-label.active{color:var(--gold)}.step-label.done{color:var(--green)}
+.step-line{height:2px;flex:1;background:var(--line);margin-bottom:18px;transition:.3s}
+.step-line.done{background:var(--green)}
+
+.card{position:relative;z-index:1;width:min(560px,100%);background:rgba(255,255,255,.05);
+  border:1px solid var(--line);padding:clamp(28px,5vw,44px)}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--gold),rgba(213,174,85,.15))}
+
+.brand{display:flex;align-items:center;gap:11px;margin-bottom:6px}
+.mark{width:34px;height:34px;border:1px solid rgba(213,174,85,.4);border-radius:8px;
+  display:grid;place-items:center;font-family:var(--disp);font-size:.68rem;
+  color:var(--gold);font-weight:700;background:rgba(213,174,85,.08)}
+.bname{font-family:var(--disp);font-size:1.05rem;color:var(--white)}
+.bsub{font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:var(--mist)}
+
+.eyebrow{font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;margin-bottom:10px}
+.eyebrow.gold{color:var(--gold)}.eyebrow.green{color:var(--green)}.eyebrow.muted{color:rgba(255,255,255,.35)}
+
+h1{font-family:var(--disp);font-weight:400;font-size:clamp(1.8rem,4vw,2.5rem);
+  color:var(--white);line-height:1.08;letter-spacing:-.02em;margin-bottom:10px}
+h1 em{font-family:var(--sub);font-style:italic;color:rgba(255,255,255,.5)}
+.desc{color:rgba(255,255,255,.55);font-size:.92rem;line-height:1.72;margin-bottom:24px}
+
+.verified-row{display:flex;align-items:center;gap:10px;background:rgba(62,227,145,.07);
+  border:1px solid rgba(62,227,145,.25);border-radius:6px;padding:12px 14px;
+  margin-bottom:22px;font-size:.84rem;color:rgba(195,232,215,.8)}
+.verified-row b{color:var(--white)}
+
+label{display:block;font-size:.58rem;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(255,255,255,.4);margin:0 0 7px}
+.req{color:var(--gold)}.opt{color:rgba(255,255,255,.25);font-weight:400;text-transform:none;letter-spacing:0}
+input,textarea{width:100%;font-family:var(--body);font-size:.95rem;font-weight:300;
+  color:#fff;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:4px;
+  padding:.8rem .9rem;margin-bottom:16px;transition:border-color .2s}
+textarea{min-height:78px;resize:vertical;line-height:1.6}
+input:focus,textarea:focus{outline:none;border-color:rgba(255,255,255,.35)}
+.hint{font-size:.76rem;color:rgba(255,255,255,.35);margin:-10px 0 18px;line-height:1.55}
+
+.btn{display:block;width:100%;text-align:center;background:var(--white);color:var(--ink);
+  font-family:var(--body);font-weight:600;font-size:.78rem;letter-spacing:.16em;
+  text-transform:uppercase;border:none;border-radius:4px;padding:.95rem;
+  cursor:pointer;transition:background .2s;text-decoration:none}
+.btn:hover{background:#EEF3FF}.btn:disabled{opacity:.6;cursor:wait}
+
+.msg{margin-top:14px;text-align:center;font-size:.88rem;min-height:20px}
+.msg.err{color:var(--red)}.msg.ok{color:var(--green)}
+
+/* NAICS results */
+.naics-results{border:1px solid rgba(123,220,255,.25);border-radius:8px;
+  background:rgba(123,220,255,.04);padding:16px;margin-bottom:20px}
+.naics-title{font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--cyan);font-weight:600;margin-bottom:12px}
+.naics-list{display:flex;flex-direction:column;gap:8px}
+.naics-item{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;
+  border:1px solid var(--line);border-radius:6px;cursor:pointer;transition:.18s;
+  background:rgba(255,255,255,.03)}
+.naics-item:hover{background:rgba(255,255,255,.07)}
+.naics-item.selected{background:rgba(213,174,85,.1);border-color:rgba(213,174,85,.4)}
+.naics-code{font-size:.78rem;color:var(--cyan);font-weight:600;min-width:58px;flex-shrink:0;margin-top:2px}
+.naics-desc{font-size:.82rem;color:var(--silver);line-height:1.45}
+.naics-check{margin-left:auto;color:var(--gold);font-size:1rem;opacity:0;flex-shrink:0}
+.naics-item.selected .naics-check{opacity:1}
+.naics-note{font-size:.74rem;color:var(--mist);margin-top:10px}
+
+/* Entity found card */
+.entity-card{border:1px solid rgba(62,227,145,.25);border-radius:8px;
+  background:rgba(62,227,145,.04);padding:16px;margin-bottom:20px}
+.entity-tag{font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--green);font-weight:600;margin-bottom:6px}
+.entity-name{font-size:1rem;color:var(--white);font-weight:500;margin-bottom:4px}
+.entity-uei{font-size:.78rem;color:var(--mist)}
+
+.center{text-align:center}
+.big-check{font-size:2.8rem;margin-bottom:12px}
+.rule{font-family:var(--sub);font-style:italic;font-size:.84rem;
+  color:rgba(255,255,255,.3);text-align:center;margin-top:18px}
+</style>
+</head>
+<body>
+<div style="width:min(560px,100%);position:relative;z-index:1">
+
+  <!-- Progress indicator -->
+  <div class="progress" id="progressBar">
+    <div class="step">
+      <div class="step-dot done" id="dot1">✓</div>
+      <span class="step-label done">Payment</span>
+    </div>
+    <div class="step-line" id="line1"></div>
+    <div class="step">
+      <div class="step-dot active" id="dot2">2</div>
+      <span class="step-label active" id="lbl2">Your Business</span>
+    </div>
+    <div class="step-line" id="line2"></div>
+    <div class="step">
+      <div class="step-dot" id="dot3">3</div>
+      <span class="step-label" id="lbl3">NAICS &amp; Keywords</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="brand">
+      <div class="mark">NG</div>
+      <div>
+        <div class="bname">NGCC</div>
+        <div class="bsub">National Government Contract Center</div>
+      </div>
+    </div>
+
+    <!-- View 0: Loading -->
+    <div id="loadingView" style="margin-top:16px">
+      <p class="eyebrow muted">Setting up your account…</p>
+      <p style="color:rgba(255,255,255,.4);font-size:.88rem">Confirming your subscription. One moment.</p>
+    </div>
+
+    <!-- View 1: Gate (not a subscriber) -->
+    <div id="gateView" style="display:none" class="center">
+      <div style="font-size:2.4rem;margin:16px 0">🔒</div>
+      <p class="eyebrow muted">Subscription Required</p>
+      <h1>Subscribe to <em>get started.</em></h1>
+      <p class="desc">NGCC membership gives you Federal, Nevada, and California contract search with personalized matching and Analyze Fit reports.</p>
+      <a class="btn" href="https://ai4-product-purchasing.ai4businesses.org/ngcc-offer.html">Subscribe — $19.99/mo &rarr;</a>
+      <p class="rule">Already a member? <a style="color:#cdeede" href="/login.html">Sign in</a></p>
+    </div>
+
+    <!-- View 2: Business info + SAM.gov lookup -->
+    <div id="bizView" style="display:none">
+      <p class="eyebrow green">✓ Payment confirmed</p>
+      <h1>Find your <em>SAM.gov profile.</em></h1>
+      <p class="desc">NGCC uses your SAM.gov registration to match federal opportunities to your NAICS codes. Enter your registered entity name exactly as it appears on SAM.gov.</p>
+      <div class="verified-row" id="verifiedRow"></div>
+      <label for="entityName">SAM.gov registered business name <span class="req">*</span></label>
+      <input id="entityName" type="text" placeholder="Acme Federal Services LLC" autocomplete="organization"/>
+      <p class="hint">Enter your exact legal name as registered at sam.gov. We'll look up your NAICS codes automatically.</p>
+      <div id="entityResult" style="display:none"></div>
+      <button class="btn" id="lookupBtn">Look up my SAM.gov profile &rarr;</button>
+      <div class="msg" id="msg2"></div>
+    </div>
+
+    <!-- View 3: NAICS confirmation + keywords -->
+    <div id="naicsView" style="display:none">
+      <p class="eyebrow green">SAM.gov profile found</p>
+      <h1>Confirm your <em>NAICS codes.</em></h1>
+      <p class="desc">These are the codes we'll match against open federal contracts. Select all that apply to your business.</p>
+      <div class="naics-results" id="naicsResults"></div>
+      <label for="keywords">State contract keywords <span class="opt">(optional)</span></label>
+      <textarea id="keywords" placeholder="e.g. IT services, network security, staffing, construction, cybersecurity"></textarea>
+      <p class="hint">Comma-separated. Used to match Nevada and California state bids. Add your services, trades, or specialties.</p>
+      <button class="btn" id="saveBtn">Open my dashboard &rarr;</button>
+      <div class="msg" id="msg3"></div>
+    </div>
+
+    <!-- View 4: Done -->
+    <div id="doneView" class="center" style="display:none">
+      <div class="big-check">✓</div>
+      <p class="eyebrow green">You're all set</p>
+      <h1>Your dashboard <em>is ready.</em></h1>
+      <p class="desc" id="doneDesc">Your federal contract matches are loading now.</p>
+      <a class="btn" href="/dashboard.html">Open NGCC Dashboard &rarr;</a>
+      <p class="rule">Sign in anytime at <a style="color:#cdeede" href="/login.html">ngcc.aproposgroupllc.com/login.html</a></p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const q = new URLSearchParams(location.search);
+const sessionId = q.get('session_id');
+const token     = q.get('token');
+
+let accountData = {};
+let selectedNaics = [];
+let entityData   = {};
+
+function show(viewId) {
+  ['loadingView','gateView','bizView','naicsView','doneView'].forEach(v => {
+    $(v).style.display = v === viewId ? '' : 'none';
+  });
+}
+
+function setProgress(step) {
+  // step = 2 or 3
+  const dots   = [$('dot2'), $('dot3')];
+  const lines  = [$('line1'), $('line2')];
+  const labels = [$('lbl2'), $('lbl3')];
+  if (step >= 2) { dots[0].className='step-dot active'; dots[0].textContent='2'; labels[0].className='step-label active'; }
+  if (step >= 3) { dots[0].className='step-dot done'; dots[0].textContent='✓'; labels[0].className='step-label done'; lines[1].className='step-line done'; dots[1].className='step-dot active'; labels[1].className='step-label active'; }
+}
+
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── Boot ──────────────────────────────────────────────────────
+(async function boot() {
+  // Already logged in → dashboard
+  try {
+    const s = JSON.parse(sessionStorage.getItem('ngcc_session') || localStorage.getItem('ngcc_session') || 'null');
+    if (s && s.email) { window.location.href = '/dashboard.html'; return; }
+  } catch(_) {}
+
+  if (!sessionId && !token) { show('gateView'); return; }
+
+  try {
+    const res = await fetch('/.netlify/functions/ngcc-verify-checkout', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: sessionId, token })
+    });
+    const d = await res.json();
+    if (!res.ok || !d.ok) { show('gateView'); return; }
+
+    accountData = d;
+    const email = d.email || '';
+    $('verifiedRow').innerHTML = '✓ Subscription confirmed for <b>' + esc(email) + '</b>';
+    setProgress(2);
+    show('bizView');
+  } catch(_) { show('gateView'); }
+})();
+
+// ── SAM.gov entity lookup ─────────────────────────────────────
+$('lookupBtn').addEventListener('click', async () => {
+  const m   = $('msg2'); m.className = 'msg'; m.textContent = '';
+  const name = $('entityName').value.trim();
+  if (!name) { m.className = 'msg err'; m.textContent = 'Please enter your registered business name.'; return; }
+  const b = $('lookupBtn'); b.disabled = true; b.textContent = 'Searching SAM.gov…';
+
+  try {
+    const res = await fetch('/.netlify/functions/ngcc-sam-entity', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ entityName: name })
+    });
+    const d = await res.json();
+    if (!res.ok || !d.ok) throw new Error(d.error || 'Could not find that entity on SAM.gov.');
+
+    entityData = d.entity;
+    accountData.entity_name = entityData.legalBusinessName || name;
+    accountData.uei         = entityData.ueiSAM || '';
+
+    // Show entity card
+    $('entityResult').style.display = '';
+    $('entityResult').innerHTML =
+      '<div class="entity-card">' +
+        '<div class="entity-tag">✓ Entity found on SAM.gov</div>' +
+        '<div class="entity-name">' + esc(entityData.legalBusinessName || name) + '</div>' +
+        (entityData.ueiSAM ? '<div class="entity-uei">UEI: ' + esc(entityData.ueiSAM) + '</div>' : '') +
+      '</div>';
+
+    // Build NAICS selection list
+    const naicsList = entityData.naicsList || [];
+    selectedNaics   = naicsList.map(n => n.naicsCode).slice(0, 10);
+
+    $('naicsResults').innerHTML =
+      '<div class="naics-title">NAICS Codes from SAM.gov profile — select all that apply</div>' +
+      '<div class="naics-list" id="naicsList">' +
+      naicsList.slice(0, 12).map((n, i) =>
+        '<div class="naics-item selected" data-code="' + esc(n.naicsCode) + '" data-i="' + i + '">' +
+          '<div class="naics-code">' + esc(n.naicsCode) + '</div>' +
+          '<div class="naics-desc">' + esc(n.naicsDescription || 'NAICS code') + (n.sbaSmallBusiness === 'Y' ? ' <span style="color:var(--green);font-size:.7rem">· Small Business</span>' : '') + '</div>' +
+          '<div class="naics-check">✓</div>' +
+        '</div>'
+      ).join('') +
+      '</div>' +
+      '<p class="naics-note">All codes selected. Click any to deselect. At least one required.</p>';
+
+    document.querySelectorAll('.naics-item').forEach(el => {
+      el.addEventListener('click', () => {
+        el.classList.toggle('selected');
+        const code = el.dataset.code;
+        if (el.classList.contains('selected')) {
+          if (!selectedNaics.includes(code)) selectedNaics.push(code);
+        } else {
+          selectedNaics = selectedNaics.filter(c => c !== code);
+        }
+      });
+    });
+
+    setProgress(3);
+    show('naicsView');
+  } catch(e) {
+    m.className = 'msg err'; m.textContent = e.message;
+    b.disabled = false; b.textContent = 'Look up my SAM.gov profile →';
+  }
+});
+
+// ── Save profile → create session ────────────────────────────
+$('saveBtn').addEventListener('click', async () => {
+  const m = $('msg3'); m.className = 'msg'; m.textContent = '';
+  if (!selectedNaics.length) {
+    m.className = 'msg err'; m.textContent = 'Please select at least one NAICS code.'; return;
+  }
+  const keywords = $('keywords').value.trim()
+    .split(',').map(k => k.trim()).filter(Boolean);
+
+  const b = $('saveBtn'); b.disabled = true; b.textContent = 'Setting up dashboard…';
+
+  try {
+    const res = await fetch('/.netlify/functions/ngcc-save-profile', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email:         accountData.email,
+        entity_name:   accountData.entity_name,
+        uei:           accountData.uei,
+        naics_codes:   selectedNaics,
+        keywords,
+        stripe_customer_id: accountData.stripe_customer_id || '',
+      })
+    });
+    const d = await res.json();
+    if (!res.ok || !d.ok) throw new Error(d.error || 'Could not save your profile. Please try again.');
+
+    const sess = JSON.stringify(d.session);
+    sessionStorage.setItem('ngcc_session', sess);
+    localStorage.setItem('ngcc_session', sess);
+
+    $('doneDesc').textContent = 'Federal contracts matching ' + selectedNaics.length + ' NAICS code' + (selectedNaics.length > 1 ? 's' : '') + ' are loading now.';
+    show('doneView');
+  } catch(e) {
+    m.className = 'msg err'; m.textContent = e.message;
+    b.disabled = false; b.textContent = 'Open my dashboard →';
+  }
+});
+</script>
+</body>
+</html>

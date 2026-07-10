@@ -1,0 +1,85 @@
+/* Full-page layout */
+.proposal-builder {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  padding: 20px;
+  gap: 20px;
+  background: #f7f7f9;
+  box-sizing: border-box;
+}
+
+/* Left: Editor section */
+.editor-section {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+}
+
+.proposal-editor {
+  flex: 1;
+  width: 100%;
+  padding: 15px;
+  font-size: 16px;
+  line-height: 1.5;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  resize: none;
+  background: #fff;
+}
+
+.proposal-actions {
+  margin-top: 15px;
+}
+
+.proposal-actions button {
+  padding: 10px 18px;
+  font-size: 15px;
+  border: none;
+  border-radius: 6px;
+  background: #0078ff;
+  color: white;
+  cursor: pointer;
+}
+
+.proposal-actions button:hover {
+  background: #005fcc;
+}
+
+/* Right: Agent session + uploads */
+.sidebar-section {
+  flex: 1.2;
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.sidebar-section h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.upload-input {
+  margin-bottom: 10px;
+}
+
+.upload-list {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 20px;
+}
+
+.upload-list li {
+  background: #eef2ff;
+  padding: 8px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+/* Contract summary */
+.sidebar-section p {
+  margin: 6px 0;
+}

@@ -1,0 +1,37 @@
+﻿[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[functions]
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/dashboard"
+  to   = "/dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/login"
+  to   = "/login.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/.netlify/functions/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+[[redirects]]
+  from   = '/api/bids'
+  to     = '/.netlify/functions/cal-pipeline'
+  status = 200
+
+

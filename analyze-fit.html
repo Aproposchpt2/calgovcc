@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Analyze Fit — NGCC</title>
+<meta name="robots" content="noindex"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;1,6..96,400&family=Cormorant:ital,wght@0,500;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0F2A6A;--ink-deep:#081A42;
+  --white:#FFFFFF;--silver:#C3D0E8;--mist:#7890B8;
+  --gold:#D5AE55;--green:#3EE391;--amber:#F2B447;--red:#FF6969;--cyan:#7BDCFF;
+  --line:rgba(255,255,255,.1);--line-2:rgba(255,255,255,.18);
+  --disp:'Bodoni Moda',Georgia,serif;--sub:'Cormorant',Georgia,serif;--body:'Jost',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);background:var(--ink-deep);color:var(--silver);line-height:1.6;min-height:100vh}
+a{color:inherit;text-decoration:none}
+
+/* ── Topbar ── */
+.topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;
+  gap:16px;padding:0 24px;height:54px;background:rgba(8,26,66,.96);
+  border-bottom:1px solid var(--line);backdrop-filter:blur(20px)}
+.top-brand{display:flex;align-items:center;gap:10px}
+.top-mark{width:32px;height:32px;border:1px solid rgba(213,174,85,.4);border-radius:7px;
+  display:grid;place-items:center;font-family:var(--disp);font-size:.66rem;
+  color:var(--gold);font-weight:700;background:rgba(213,174,85,.08)}
+.top-name{font-family:var(--disp);font-size:.95rem;color:var(--white)}
+.back-btn{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600;
+  color:var(--mist);border:1px solid var(--line);border-radius:5px;padding:6px 14px;
+  background:none;cursor:pointer;transition:.16s}
+.back-btn:hover{color:var(--white);border-color:var(--line-2)}
+
+/* ── Progress bar ── */
+.progress-bar{height:3px;background:rgba(255,255,255,.08);position:relative;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--cyan));
+  transition:width 1.2s ease;width:0}
+
+/* ── Content ── */
+.page{max-width:780px;margin:0 auto;padding:32px 24px 80px}
+
+/* ── Loading state ── */
+.loading-state{text-align:center;padding:60px 0}
+.loading-icon{font-size:2.4rem;margin-bottom:16px;animation:spin 2s linear infinite;display:inline-block}
+@keyframes spin{100%{transform:rotate(360deg)}}
+.loading-title{font-family:var(--disp);font-size:1.5rem;color:var(--white);margin-bottom:8px}
+.loading-sub{font-size:.88rem;color:var(--mist);max-width:360px;margin:0 auto;line-height:1.65}
+.loading-steps{display:flex;flex-direction:column;gap:8px;margin-top:24px;max-width:320px;margin-left:auto;margin-right:auto}
+.loading-step{display:flex;align-items:center;gap:10px;font-size:.78rem;color:var(--mist)}
+.loading-step .dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.2);flex-shrink:0}
+.loading-step.done{color:var(--green)}.loading-step.done .dot{background:var(--green)}
+.loading-step.active{color:var(--white)}.loading-step.active .dot{background:var(--gold);animation:pulse 1.2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── Score hero ── */
+.score-hero{display:flex;align-items:center;gap:20px;border:1px solid var(--line-2);
+  border-radius:14px;padding:22px;background:rgba(255,255,255,.04);margin-bottom:22px;flex-wrap:wrap}
+.score-ring-wrap{position:relative;width:80px;height:80px;flex-shrink:0}
+.score-ring-wrap svg{width:80px;height:80px;transform:rotate(-90deg)}
+.score-ring-wrap circle{fill:none;stroke-width:6;r:32;cx:40;cy:40}
+.sr-track{stroke:rgba(255,255,255,.1)}
+.sr-fill{stroke-dasharray:201;stroke-linecap:round;transition:.8s}
+.score-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:var(--disp);font-size:1.6rem;font-weight:400}
+.score-right{flex:1}
+.score-rec{display:inline-flex;align-items:center;gap:7px;font-size:.62rem;letter-spacing:.16em;
+  text-transform:uppercase;font-weight:700;border-radius:999px;padding:5px 14px;
+  border:1px solid;margin-bottom:8px}
+.rec-pursue{color:var(--green);border-color:rgba(62,227,145,.4);background:rgba(62,227,145,.1)}
+.rec-review{color:var(--amber);border-color:rgba(242,180,71,.4);background:rgba(242,180,71,.1)}
+.rec-pass{color:var(--red);border-color:rgba(255,105,105,.4);background:rgba(255,105,105,.1)}
+.score-title{font-family:var(--disp);font-size:1.3rem;color:var(--white);font-weight:400;
+  line-height:1.2;margin-bottom:4px}
+.score-meta{font-size:.78rem;color:var(--mist)}
+.score-chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.sc{font-size:.62rem;letter-spacing:.06em;border-radius:999px;padding:3px 9px;border:1px solid}
+.sc-a{color:var(--silver);border-color:var(--line)}
+.sc-n{color:var(--cyan);border-color:rgba(123,220,255,.25);background:rgba(123,220,255,.06)}
+.sc-g{color:var(--gold);border-color:rgba(213,174,85,.25);background:rgba(213,174,85,.06)}
+
+/* ── Sections ── */
+.sections{display:flex;flex-direction:column;gap:10px}
+.section{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.section-head{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;
+  background:rgba(255,255,255,.04);transition:.16s;border:none;width:100%;text-align:left}
+.section-head:hover{background:rgba(255,255,255,.07)}
+.section-num{font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mist);
+  font-weight:600;width:20px;flex-shrink:0}
+.section-title{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;
+  font-weight:700;color:var(--silver);flex:1}
+.section-title.highlight{color:var(--gold)}
+.section-arrow{color:var(--mist);font-size:.7rem;transition:.2s;flex-shrink:0}
+.section.open .section-arrow{transform:rotate(90deg)}
+.section-body{display:none;padding:0 16px 16px;font-size:.9rem;color:rgba(235,242,255,.82);
+  line-height:1.75;border-top:1px solid var(--line)}
+.section.open .section-body{display:block}
+.section-body.skeleton{background:rgba(255,255,255,.04);border-radius:6px;height:56px;
+  animation:shimmer 1.4s infinite}
+@keyframes shimmer{0%{opacity:.4}50%{opacity:.8}100%{opacity:.4}}
+
+/* ── Actions ── */
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  border-radius:6px;font-family:var(--body);font-weight:700;font-size:.74rem;
+  letter-spacing:.12em;text-transform:uppercase;padding:11px 20px;cursor:pointer;
+  border:1px solid;transition:.18s}
+.btn-primary{background:var(--white);color:var(--ink-deep);border-color:var(--white)}
+.btn-primary:hover{background:#EEF3FF}
+.btn-secondary{background:rgba(255,255,255,.05);color:var(--silver);border-color:var(--line)}
+.btn-secondary:hover{background:rgba(255,255,255,.1);color:var(--white)}
+.btn-gold{background:rgba(213,174,85,.1);color:var(--gold);border-color:rgba(213,174,85,.3)}
+.btn-gold:hover{background:rgba(213,174,85,.2)}
+
+/* ── Error state ── */
+.error-state{text-align:center;padding:48px 20px}
+.error-icon{font-size:2rem;margin-bottom:12px}
+.error-title{font-family:var(--disp);font-size:1.3rem;color:var(--white);margin-bottom:8px}
+.error-sub{font-size:.88rem;color:var(--mist);max-width:360px;margin:0 auto 20px;line-height:1.65}
+
+@media(max-width:560px){
+  .score-hero{flex-direction:column;align-items:flex-start}
+  .actions{flex-direction:column}
+  .btn{width:100%}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="top-brand">
+    <div class="top-mark">NG</div>
+    <div class="top-name">NGCC — Analyze Fit</div>
+  </div>
+  <button class="back-btn" onclick="window.location.href='/dashboard.html'">&larr; Back to Dashboard</button>
+</header>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="page">
+
+  <!-- Loading -->
+  <div id="loadingState" class="loading-state">
+    <div class="loading-icon">◎</div>
+    <div class="loading-title">Analyzing your fit…</div>
+    <div class="loading-sub">NGCC is matching this contract against your NAICS profile and generating your analysis.</div>
+    <div class="loading-steps">
+      <div class="loading-step done" id="ls1"><span class="dot"></span>Loading contract data</div>
+      <div class="loading-step active" id="ls2"><span class="dot"></span>Matching NAICS codes</div>
+      <div class="loading-step" id="ls3"><span class="dot"></span>Generating bid/no-bid analysis</div>
+      <div class="loading-step" id="ls4"><span class="dot"></span>Building proposal checklist</div>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div id="errorState" class="error-state" style="display:none">
+    <div class="error-icon">⚠</div>
+    <div class="error-title">Analysis unavailable</div>
+    <div class="error-sub" id="errorMsg">Something went wrong. Please try again.</div>
+    <div class="actions" style="justify-content:center">
+      <button class="btn btn-primary" onclick="runAnalysis()">Try again</button>
+      <button class="btn btn-secondary" onclick="window.location.href='/dashboard.html'">Back to dashboard</button>
+    </div>
+  </div>
+
+  <!-- Report -->
+  <div id="reportState" style="display:none">
+
+    <!-- Score hero -->
+    <div class="score-hero">
+      <div class="score-ring-wrap">
+        <svg><circle class="sr-track"/><circle class="sr-fill" id="scoreFill" stroke="var(--green)" stroke-dashoffset="201"/></svg>
+        <div class="score-num" id="scoreNum" style="color:var(--green)">0</div>
+      </div>
+      <div class="score-right">
+        <div class="score-rec" id="scoreRec"></div>
+        <div class="score-title" id="scoreTitle"></div>
+        <div class="score-meta" id="scoreMeta"></div>
+        <div class="score-chips" id="scoreChips"></div>
+      </div>
+    </div>
+
+    <!-- Analysis sections -->
+    <div class="sections" id="sectionsWrap"></div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <a id="developProposalBtn" class="btn btn-primary" href="#" style="display:none">Develop My Proposal →</a>
+      <button class="btn btn-primary" onclick="window.print()">Export as PDF</button>
+      <button class="btn btn-gold" onclick="window.location.href='/dashboard.html'">← Back to Contracts</button>
+      <button class="btn btn-secondary" onclick="runAnalysis()">↻ Re-run Analysis</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+
+// ── Auth ──────────────────────────────────────────────────────
+let session = null;
+try {
+  const raw = sessionStorage.getItem('ngcc_session') || localStorage.getItem('ngcc_session');
+  if (raw) session = JSON.parse(raw);
+} catch(_) {}
+if (!session?.email) { window.location.href = '/login.html'; }
+
+// ── Contract from dashboard ───────────────────────────────────
+let contract = null;
+try {
+  const raw = sessionStorage.getItem('ngcc_analyze_contract');
+  if (raw) contract = JSON.parse(raw);
+} catch(_) {}
+if (!contract) { window.location.href = '/dashboard.html'; }
+
+// ── Section definitions ───────────────────────────────────────
+const SECTIONS = [
+  { key:'s1',  title:'Opportunity Summary',            highlight:false },
+  { key:'s2',  title:'Why NGCC Matched This',          highlight:false },
+  { key:'s3',  title:'Eligibility Review',             highlight:false },
+  { key:'s4',  title:'Capability Match',               highlight:false },
+  { key:'s5',  title:'Bid / No-Bid Rationale',         highlight:true  },
+  { key:'s6',  title:'Performance Requirements',       highlight:false },
+  { key:'s7',  title:'Staffing & Delivery',            highlight:false },
+  { key:'s8',  title:'Compliance Requirements',        highlight:false },
+  { key:'s9',  title:'Deadline Risk',                  highlight:false },
+  { key:'s10', title:'Pricing Considerations',         highlight:false },
+  { key:'s11', title:'Draft Technical Approach',       highlight:true  },
+  { key:'s12', title:'Proposal Checklist',             highlight:true  },
+  { key:'s13', title:'Questions for Contracting Officer', highlight:false },
+  { key:'s14', title:'Recommended Next Step',          highlight:true  },
+];
+
+// ── Progress animation ────────────────────────────────────────
+let prog = 5;
+const progInterval = setInterval(() => {
+  prog = Math.min(prog + (Math.random() * 8), 88);
+  $('progressFill').style.width = prog + '%';
+}, 600);
+
+function setLoadingStep(n) {
+  ['ls1','ls2','ls3','ls4'].forEach((id, i) => {
+    const el = $(id);
+    el.className = 'loading-step ' + (i < n ? 'done' : i === n ? 'active' : '');
+  });
+}
+
+// ── Score ring animation ──────────────────────────────────────
+function animateScore(score, color) {
+  const circ = 201;
+  const offset = circ - (score / 100) * circ;
+  const fill = $('scoreFill');
+  const num  = $('scoreNum');
+  fill.style.stroke         = color;
+  fill.style.strokeDashoffset = offset;
+  num.style.color           = color;
+  let current = 0;
+  const step  = score / 40;
+  const t = setInterval(() => {
+    current = Math.min(current + step, score);
+    num.textContent = Math.round(current);
+    if (current >= score) clearInterval(t);
+  }, 30);
+}
+
+function scoreColor(s) {
+  return s >= 75 ? 'var(--green)' : s >= 50 ? 'var(--amber)' : 'var(--red)';
+}
+
+function recClass(rec) {
+  if (rec === 'PURSUE') return 'rec-pursue';
+  if (rec === 'PASS')   return 'rec-pass';
+  return 'rec-review';
+}
+
+function recLabel(rec) {
+  if (rec === 'PURSUE') return '✓ Pursue this contract';
+  if (rec === 'PASS')   return '✗ Pass on this one';
+  return '⚑ Review carefully';
+}
+
+// ── Render report ─────────────────────────────────────────────
+function renderReport(data) {
+  clearInterval(progInterval);
+  $('progressFill').style.width = '100%';
+  $('progressFill').style.transition = 'width .4s';
+
+  const score = data.fitScore     || 0;
+  const rec   = data.recommendation || 'REVIEW';
+  const color = scoreColor(score);
+  const secs  = data.sections     || {};
+  const c     = data.contract     || contract;
+
+  // Score hero
+  $('scoreRec').className   = 'score-rec ' + recClass(rec);
+  $('scoreRec').textContent  = recLabel(rec);
+  $('scoreTitle').textContent = c.title || contract.title || 'Contract Analysis';
+  $('scoreMeta').textContent  = (c.agency || contract.agency || '') +
+    (contract.responseDeadline ? ' · Closes ' + new Date(contract.responseDeadline).toLocaleDateString([],{month:'short',day:'numeric',year:'numeric'}) : '');
+
+  // Chips
+  const chips = [];
+  if (contract.naicsCode) chips.push({ label: 'NAICS ' + contract.naicsCode, cls: 'sc-n' });
+  if (contract.setAside && contract.setAside !== 'None') chips.push({ label: contract.setAside, cls: 'sc-g' });
+  if (contract.source)    chips.push({ label: contract.source === 'nevada' ? 'Nevada State' : 'Federal', cls: 'sc-a' });
+  $('scoreChips').innerHTML = chips.map(ch => `<span class="sc ${ch.cls}">${ch.label}</span>`).join('');
+
+  // Wire Develop My Proposal button with live session + notice ID
+  const devBtn = document.getElementById('developProposalBtn');
+  if (devBtn && session?.token && (contract?.noticeId || contract?.id)) {
+    devBtn.href = `https://gcpdc.aproposgroupllc.com/develop-proposal.html?session=${encodeURIComponent(session.token)}&opportunity_id=${encodeURIComponent(contract.noticeId || contract.id)}`;
+    devBtn.style.display = '';
+  }
+
+  // Sections
+  $('sectionsWrap').innerHTML = SECTIONS.map((s, i) => `
+    <div class="section" id="sec-${s.key}">
+      <button class="section-head" onclick="toggleSection('${s.key}')">
+        <span class="section-num">${String(i+1).padStart(2,'0')}</span>
+        <span class="section-title${s.highlight?' highlight':''}">${s.title}</span>
+        <span class="section-arrow">›</span>
+      </button>
+      <div class="section-body">${esc(secs[s.key] || 'Analysis not available for this section.')}</div>
+    </div>
+  `).join('');
+
+  // Auto-open first 2 sections
+  ['s1','s5'].forEach(k => {
+    const el = document.getElementById('sec-'+k);
+    if (el) el.classList.add('open');
+  });
+
+  $('loadingState').style.display = 'none';
+  $('reportState').style.display  = '';
+
+  setTimeout(() => animateScore(score, color), 200);
+}
+
+function toggleSection(key) {
+  const el = document.getElementById('sec-' + key);
+  if (el) el.classList.toggle('open');
+}
+
+// ── Run analysis ──────────────────────────────────────────────
+async function runAnalysis() {
+  $('errorState').style.display  = 'none';
+  $('reportState').style.display = 'none';
+  $('loadingState').style.display = '';
+  $('progressFill').style.width  = '5%';
+  $('progressFill').style.transition = 'width 1.2s ease';
+
+  setLoadingStep(0);
+  setTimeout(() => setLoadingStep(1), 800);
+  setTimeout(() => setLoadingStep(2), 2200);
+  setTimeout(() => setLoadingStep(3), 4500);
+
+  try {
+    const res  = await fetch('/.netlify/functions/ngcc-analyze-fit', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ contract, email: session.email }),
+    });
+    const data = await res.json();
+
+    if (!res.ok || data.error) {
+      throw new Error(data.error || 'Analysis failed');
+    }
+
+    renderReport(data);
+  } catch (err) {
+    clearInterval(progInterval);
+    $('progressFill').style.width  = '100%';
+    $('loadingState').style.display = 'none';
+    $('errorMsg').textContent = err.message || 'Something went wrong. Please try again.';
+    $('errorState').style.display = '';
+  }
+}
+
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── Boot ──────────────────────────────────────────────────────
+runAnalysis();
+</script>
+</body>
+</html>
