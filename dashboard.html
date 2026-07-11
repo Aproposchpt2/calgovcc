@@ -270,12 +270,16 @@ function loadBids() {
       ALL = data.bids || [];
       setStats();
       var hasKw = PROFILE.keywords && PROFILE.keywords.length > 0;
+      var matchCount = ALL.filter(function(b){ return hits(b)>0; }).length;
       if (hasKw) {
         $('vtoggle').style.display = '';
-        $('mCount').textContent = '('+ALL.filter(function(b){ return hits(b)>0; }).length+')';
-        view = 'matches';
-        document.querySelector('.vt[data-v="matches"]').classList.add('on');
-        document.querySelector('.vt[data-v="all"]').classList.remove('on');
+        $('mCount').textContent = '('+matchCount+')';
+        // Only auto-switch to matches if there are actual matches
+        if (matchCount > 0) {
+          view = 'matches';
+          document.querySelector('.vt[data-v="matches"]').classList.add('on');
+          document.querySelector('.vt[data-v="all"]').classList.remove('on');
+        }
       }
       render();
     })
