@@ -59,10 +59,6 @@ textarea{min-height:80px;resize:vertical;line-height:1.6}
   <label for="email">Email address</label>
   <input id="email" type="email" placeholder="you@yourbusiness.com" autocomplete="email"/>
 
-  <label for="keywords">What does your business do?</label>
-  <textarea id="keywords" placeholder="e.g. IT services, software development, consulting, construction, landscaping…"></textarea>
-  <p class="hint">Enter services, trades, or product types — comma separated. We match these against every open California bid.</p>
-
   <button class="btn" id="startBtn">Select My Services &rarr;</button>
   <div class="msg" id="msg"></div>
 
@@ -75,33 +71,29 @@ document.getElementById('startBtn').addEventListener('click', function() {
   var msg = document.getElementById('msg');
   msg.className = 'msg'; msg.textContent = '';
 
-  var biz      = document.getElementById('biz').value.trim();
-  var name     = document.getElementById('name').value.trim();
-  var email    = document.getElementById('email').value.trim();
-  var keywords = document.getElementById('keywords').value.trim();
+  var biz   = document.getElementById('biz').value.trim();
+  var name  = document.getElementById('name').value.trim();
+  var email = document.getElementById('email').value.trim();
 
-  if (!keywords) { msg.className = 'msg err'; msg.textContent = 'Please describe what your business does.'; return; }
-  if (!biz)      { msg.className = 'msg err'; msg.textContent = 'Please enter your business name.'; return; }
+  if (!biz)   { msg.className = 'msg err'; msg.textContent = 'Please enter your business name.'; return; }
+  if (!email) { msg.className = 'msg err'; msg.textContent = 'Please enter your email address.'; return; }
 
   var btn = document.getElementById('startBtn');
-  btn.disabled = true; btn.textContent = 'Building your dashboard…';
+  btn.disabled = true; btn.textContent = 'Continuing…';
 
-  var kws = keywords.split(/[,\n]+/).map(function(k){ return k.trim().toLowerCase(); }).filter(Boolean).slice(0, 12);
-
-  // Store profile
-  var profile = { business_name: biz, name: name, email: email, keywords: kws, commodity_codes: [], state: 'CA' };
+  // Store basic profile — keywords set on services.html
+  var profile = { business_name: biz, name: name, email: email, keywords: [], commodity_codes: [], state: 'CA' };
   localStorage.setItem('calgcc_profile', JSON.stringify(profile));
 
   // Set free trial session
-  var session = { token: 'free_trial_' + Date.now(), state: 'CA', business_name: biz, keywords: kws, free_trial: true };
+  var session = { token: 'free_trial_' + Date.now(), state: 'CA', business_name: biz, keywords: [], free_trial: true };
   localStorage.setItem('calgcc_session', JSON.stringify(session));
 
-  // Go to service selection
   location.href = '/services.html';
 });
 
-document.getElementById('keywords').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); document.getElementById('startBtn').click(); }
+document.getElementById('email').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') { e.preventDefault(); document.getElementById('startBtn').click(); }
 });
 </script>
 </body>
