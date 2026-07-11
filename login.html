@@ -96,8 +96,9 @@ $('verifyBtn').addEventListener('click', async ()=>{
     const d=await res.json();
     if(!res.ok) throw new Error(d.error||'Could not verify.');
     localStorage.setItem('calgcc_session', JSON.stringify({ token: d.token, state: 'CA', business_name: d.business_name, keywords: d.keywords || [] }));
-    m.className='msg ok'; m.textContent='Signed in — opening your dashboard…';
-    location.href='/dashboard.html';
+    m.className='msg ok'; m.textContent='Signed in — setting up your dashboard…';
+    var profile = JSON.parse(localStorage.getItem('calgcc_profile') || '{}');
+    location.href = (profile.keywords && profile.keywords.length) ? '/dashboard.html' : '/onboarding.html';
   }catch(e){ m.className='msg err'; m.textContent=e.message; b.disabled=false; b.textContent='Sign in →'; }
 });
 $('code').addEventListener('keydown',e=>{ if(e.key==='Enter') $('verifyBtn').click(); });
