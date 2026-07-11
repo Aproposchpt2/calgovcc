@@ -124,6 +124,7 @@ exports.handler = async function (event) {
         agency:         b.agency          || '',
         close_date:     b.close_date      || '',
         daysToClose:    daysToClose,
+        due_in_days:    daysToClose,
         url:            b.url             || 'https://vendors.planetbids.com',
         status:         'live',
       };
